@@ -9,10 +9,10 @@ if (isset($_POST['login'])) {
 
     // Query ke tabel 'akun' (sesuai database)
     $query = mysqli_query($conn, "SELECT * FROM akun WHERE username='$username' AND PASSWORD='$password'");
-    
+
     if (mysqli_num_rows($query) > 0) {
         $data = mysqli_fetch_assoc($query);
-        
+
         // Simpan data ke session
         $_SESSION['id_akun'] = $data['id_akun'];
         $_SESSION['nama']    = $data['username'];
@@ -24,11 +24,10 @@ if (isset($_POST['login'])) {
         } else if ($data['role'] == "pegawai") {
             header("location:pegawai/pegawai_dashboard.php?pesan=login_berhasil");
         }
-        exit; // Penting agar kode di bawahnya tidak dieksekusi
+        exit;
     } else {
-        // Jika login gagal, balikkan ke login.php dengan pesan error
-        header ("location: login.php?pesan=gagal");
+
+        header("location: login.php?pesan=gagal");
         exit;
     }
 }
-?>
