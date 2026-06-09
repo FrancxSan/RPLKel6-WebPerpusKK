@@ -11,18 +11,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "pengelola") {
 
 // --- LOGIKA BARU: UPDATE LOKASI KANTOR & JAM PULANG ---
 if (isset($_POST['update_lokasi'])) {
+
     $lat = mysqli_real_escape_string($conn, $_POST['lat_kantor']);
     $long = mysqli_real_escape_string($conn, $_POST['long_kantor']);
     $rad = mysqli_real_escape_string($conn, $_POST['radius']);
     $jam_pulang = mysqli_real_escape_string($conn, $_POST['jam_pulang_standar']); // Tambah variabel jam pulang
-    
+
     mysqli_query($conn, "UPDATE pengaturan_absen SET 
         latitude_kantor = '$lat', 
         longitude_kantor = '$long', 
         radius_maksimal = '$rad',
         jam_pulang_standar = '$jam_pulang' 
         WHERE id = 1");
-        
+
     header("location:admin_dashboard.php?page=dashboard&pesan=lokasi_diperbarui");
     exit;
 }
@@ -222,7 +223,7 @@ $page = $_GET['page'] ?? 'dashboard';
             border-radius: 15px;
             border: none;
             background: #fff;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
 
         @media print {
@@ -252,8 +253,9 @@ $page = $_GET['page'] ?? 'dashboard';
 </head>
 
 <body>
-    <?php if (isset($_GET['pesan']) && trim($_GET['pesan']) == 'login_berhasil') : ?>
-        <div id="notif-login-fixed" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; width: 100%; max-width: 400px; padding: 0 20px;">
+    <?php if (isset($_GET['pesan']) && trim($_GET['pesan']) == 'login_berhasil'): ?>
+        <div id="notif-login-fixed"
+            style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; width: 100%; max-width: 400px; padding: 0 20px;">
             <div class="alert alert-success border-0 shadow-lg text-center py-3">
                 <i class="bi bi-check-circle-fill me-2"></i>
                 <strong>Login Berhasil!</strong>
@@ -261,11 +263,11 @@ $page = $_GET['page'] ?? 'dashboard';
             </div>
         </div>
         <script>
-            setTimeout(function() {
+            setTimeout(function () {
                 var el = document.getElementById('notif-login-fixed');
                 if (el) {
                     el.style.opacity = "0";
-                    setTimeout(function() {
+                    setTimeout(function () {
                         el.remove();
                     }, 600);
                 }
@@ -280,11 +282,16 @@ $page = $_GET['page'] ?? 'dashboard';
             <p class="small opacity-75 mb-0"><?= $_SESSION['nama'] ?></p>
         </div>
         <nav class="nav flex-column mt-3">
-            <a href="?page=dashboard" class="nav-link <?= $page == 'dashboard' ? 'active' : '' ?>"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
-            <a href="?page=absensi" class="nav-link <?= $page == 'absensi' ? 'active' : '' ?>"><i class="bi bi-calendar-check"></i> Data Absensi</a>
-            <a href="?page=pegawai" class="nav-link <?= $page == 'pegawai' ? 'active' : '' ?>"><i class="bi bi-people-fill"></i> Kelola Pegawai</a>
-            <a href="?page=terlewat" class="nav-link <?= $page == 'terlewat' ? 'active' : '' ?>"><i class="bi bi-person-x-fill"></i> Absen Terlewat</a>
-            <a href="?page=laporan" class="nav-link <?= $page == 'laporan' ? 'active' : '' ?>"><i class="bi bi-printer-fill"></i> Unduh Laporan</a>
+            <a href="?page=dashboard" class="nav-link <?= $page == 'dashboard' ? 'active' : '' ?>"><i
+                    class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+            <a href="?page=absensi" class="nav-link <?= $page == 'absensi' ? 'active' : '' ?>"><i
+                    class="bi bi-calendar-check"></i> Data Absensi</a>
+            <a href="?page=pegawai" class="nav-link <?= $page == 'pegawai' ? 'active' : '' ?>"><i
+                    class="bi bi-people-fill"></i> Kelola Pegawai</a>
+            <a href="?page=terlewat" class="nav-link <?= $page == 'terlewat' ? 'active' : '' ?>"><i
+                    class="bi bi-person-x-fill"></i> Absen Terlewat</a>
+            <a href="?page=laporan" class="nav-link <?= $page == 'laporan' ? 'active' : '' ?>"><i
+                    class="bi bi-printer-fill"></i> Unduh Laporan</a>
         </nav>
     </div>
 
@@ -295,15 +302,17 @@ $page = $_GET['page'] ?? 'dashboard';
                 <h5 class="mb-0 fw-bold">DASHBOARD PENGELOLA</h5>
             </div>
             <div class="d-flex align-items-center">
-                <span class="me-4 fw-bold"><i class="bi bi-clock-fill me-2"></i> <span id="live-clock">00:00:00</span></span>
-                <button type="button" onclick="konfirmasiLogout()" class="btn btn-sm btn-logout-admin fw-bold shadow-sm px-3">
+                <span class="me-4 fw-bold"><i class="bi bi-clock-fill me-2"></i> <span
+                        id="live-clock">00:00:00</span></span>
+                <button type="button" onclick="konfirmasiLogout()"
+                    class="btn btn-sm btn-logout-admin fw-bold shadow-sm px-3">
                     Logout <i class="bi bi-box-arrow-right ms-1"></i>
                 </button>
             </div>
         </div>
 
         <div class="content-container">
-            <?php if ($page == 'dashboard') : ?>
+            <?php if ($page == 'dashboard'): ?>
                 <?php
                 // Ambil Pengaturan Absen Terkini
                 $st_q = mysqli_query($conn, "SELECT * FROM pengaturan_absen WHERE id = 1");
@@ -313,7 +322,7 @@ $page = $_GET['page'] ?? 'dashboard';
                 $long_kantor = $st_data['longitude_kantor'] ?? '';
                 $radius = $st_data['radius_maksimal'] ?? '100';
                 $jam_pulang_min = $st_data['jam_pulang_standar'] ?? '16:00:00'; // Tambah fetch jam pulang
-
+            
                 $tgl_hari_ini = date('Y-m-d');
                 $total_p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM akun WHERE role='pegawai'"))['jml'];
                 $hadir_p = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as jml FROM absensi WHERE tanggal_absensi='$tgl_hari_ini'"))['jml'];
@@ -322,23 +331,28 @@ $page = $_GET['page'] ?? 'dashboard';
                 $miss_count = mysqli_num_rows(mysqli_query($conn, $q_miss));
                 ?>
 
-                <?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'lokasi_diperbarui') : ?>
+                <?php if (isset($_GET['pesan']) && $_GET['pesan'] == 'lokasi_diperbarui'): ?>
                     <script>Swal.fire('Berhasil!', 'Lokasi & Waktu Operasional telah diperbarui.', 'success');</script>
                 <?php endif; ?>
 
                 <div class="row mb-4 g-4">
                     <div class="col-md-7">
-                        <div class="card card-control-absen p-4 h-100 border-start border-4 border-<?= ($status_absen == 'buka' ? 'success' : 'danger') ?>">
+                        <div
+                            class="card card-control-absen p-4 h-100 border-start border-4 border-<?= ($status_absen == 'buka' ? 'success' : 'danger') ?>">
                             <h5 class="fw-bold mb-1"><i class="bi bi-shield-lock-fill me-2"></i> Kendali Akses Absensi</h5>
                             <p class="text-muted small mb-4">Membuka atau mengunci akses tombol absen bagi pegawai.</p>
                             <div class="d-flex align-items-center justify-content-between bg-light p-3 rounded-3">
-                                <span class="badge bg-<?= ($status_absen == 'buka' ? 'success' : 'danger') ?> p-2 px-3 fw-bold">
-                                    <i class="bi bi-<?= ($status_absen == 'buka' ? 'unlock' : 'lock') ?>-fill me-1"></i> STATUS: <?= strtoupper($status_absen) ?>
+                                <span
+                                    class="badge bg-<?= ($status_absen == 'buka' ? 'success' : 'danger') ?> p-2 px-3 fw-bold">
+                                    <i class="bi bi-<?= ($status_absen == 'buka' ? 'unlock' : 'lock') ?>-fill me-1"></i>
+                                    STATUS: <?= strtoupper($status_absen) ?>
                                 </span>
-                                <?php if ($status_absen == 'tutup') : ?>
-                                    <button onclick="updateAbsen('buka')" class="btn btn-success fw-bold shadow-sm"><i class="bi bi-play-fill"></i> BUKA SEKARANG</button>
-                                <?php else : ?>
-                                    <button onclick="updateAbsen('tutup')" class="btn btn-danger fw-bold shadow-sm"><i class="bi bi-stop-fill"></i> TUTUP SEKARANG</button>
+                                <?php if ($status_absen == 'tutup'): ?>
+                                    <button onclick="updateAbsen('buka')" class="btn btn-success fw-bold shadow-sm"><i
+                                            class="bi bi-play-fill"></i> BUKA SEKARANG</button>
+                                <?php else: ?>
+                                    <button onclick="updateAbsen('tutup')" class="btn btn-danger fw-bold shadow-sm"><i
+                                            class="bi bi-stop-fill"></i> TUTUP SEKARANG</button>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -351,33 +365,39 @@ $page = $_GET['page'] ?? 'dashboard';
                                 <div class="row g-2 mb-2">
                                     <div class="col-6">
                                         <label class="small fw-bold">Latitude</label>
-                                        <input type="text" name="lat_kantor" class="form-control form-control-sm" value="<?= $lat_kantor ?>" placeholder="-5.xxxx" required>
+                                        <input type="text" name="lat_kantor" class="form-control form-control-sm"
+                                            value="<?= $lat_kantor ?>" placeholder="-5.xxxx" required>
                                     </div>
                                     <div class="col-6">
                                         <label class="small fw-bold">Longitude</label>
-                                        <input type="text" name="long_kantor" class="form-control form-control-sm" value="<?= $long_kantor ?>" placeholder="119.xxxx" required>
+                                        <input type="text" name="long_kantor" class="form-control form-control-sm"
+                                            value="<?= $long_kantor ?>" placeholder="119.xxxx" required>
                                     </div>
                                 </div>
                                 <div class="row g-2 mb-3">
                                     <div class="col-6">
                                         <label class="small fw-bold">Radius (Meter)</label>
-                                        <input type="number" name="radius" class="form-control form-control-sm" value="<?= $radius ?>" required>
+                                        <input type="number" name="radius" class="form-control form-control-sm"
+                                            value="<?= $radius ?>" required>
                                     </div>
                                     <div class="col-6">
                                         <label class="small fw-bold text-danger">Jam Pulang Min.</label>
-                                        <input type="time" name="jam_pulang_standar" class="form-control form-control-sm" value="<?= $jam_pulang_min ?>" required>
+                                        <input type="time" name="jam_pulang_standar" class="form-control form-control-sm"
+                                            value="<?= $jam_pulang_min ?>" required>
                                     </div>
                                 </div>
-                                <button type="submit" name="update_lokasi" class="btn btn-primary btn-sm w-100 fw-bold">SIMPAN PERUBAHAN</button>
+                                <button type="submit" name="update_lokasi"
+                                    class="btn btn-primary btn-sm w-100 fw-bold">SIMPAN PERUBAHAN</button>
                             </form>
                         </div>
                     </div>
                 </div>
 
-                <?php if ($miss_count > 0) : ?>
+                <?php if ($miss_count > 0): ?>
                     <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center mb-4">
                         <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
-                        <div><strong>Perhatian:</strong> Ada <?= $miss_count ?> pegawai aktif yang belum absen hari ini. <a href="?page=terlewat" class="alert-link">Lihat Daftar</a></div>
+                        <div><strong>Perhatian:</strong> Ada <?= $miss_count ?> pegawai aktif yang belum absen hari ini. <a
+                                href="?page=terlewat" class="alert-link">Lihat Daftar</a></div>
                     </div>
                 <?php endif; ?>
 
@@ -385,26 +405,32 @@ $page = $_GET['page'] ?? 'dashboard';
                     <div class="col-md-4">
                         <div class="stat-card bg-red">
                             <h2 class="fw-bold"><?= $total_p ?></h2>
-                            <p class="mb-0 opacity-75">Total Pegawai</p><i class="bi bi-people position-absolute opacity-25" style="font-size: 4rem; right: 20px; bottom: 0;"></i>
+                            <p class="mb-0 opacity-75">Total Pegawai</p><i class="bi bi-people position-absolute opacity-25"
+                                style="font-size: 4rem; right: 20px; bottom: 0;"></i>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card bg-orange">
                             <h2 class="fw-bold"><?= $hadir_p ?></h2>
-                            <p class="mb-0 opacity-75">Hadir Hari Ini</p><i class="bi bi-person-check position-absolute opacity-25" style="font-size: 4rem; right: 20px; bottom: 0;"></i>
+                            <p class="mb-0 opacity-75">Hadir Hari Ini</p><i
+                                class="bi bi-person-check position-absolute opacity-25"
+                                style="font-size: 4rem; right: 20px; bottom: 0;"></i>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card bg-blue">
                             <h2 class="fw-bold"><?= $terlambat_p ?></h2>
-                            <p class="mb-0 opacity-75">Terlambat</p><i class="bi bi-clock-history position-absolute opacity-25" style="font-size: 4rem; right: 20px; bottom: 0;"></i>
+                            <p class="mb-0 opacity-75">Terlambat</p><i
+                                class="bi bi-clock-history position-absolute opacity-25"
+                                style="font-size: 4rem; right: 20px; bottom: 0;"></i>
                         </div>
                     </div>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                     <div class="card-header bg-white py-3">
-                        <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-lightning-fill text-warning"></i> Absensi Terbaru (Hari Ini)</h6>
+                        <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-lightning-fill text-warning"></i> Absensi Terbaru
+                            (Hari Ini)</h6>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
@@ -418,20 +444,24 @@ $page = $_GET['page'] ?? 'dashboard';
                             <tbody>
                                 <?php
                                 $res_rt = mysqli_query($conn, "SELECT a.*, ak.username FROM absensi a JOIN akun ak ON a.id_pegawai=ak.id_akun WHERE a.tanggal_absensi='$tgl_hari_ini' ORDER BY a.jam_masuk DESC");
-                                while ($r = mysqli_fetch_assoc($res_rt)) : $is_late = (strtotime($r['jam_masuk']) > strtotime('08:00:00')); ?>
+                                while ($r = mysqli_fetch_assoc($res_rt)):
+                                    $is_late = (strtotime($r['jam_masuk']) > strtotime('08:00:00')); ?>
                                     <tr>
                                         <td class="fw-bold text-uppercase"><?= $r['username'] ?></td>
                                         <td><?= $r['jam_masuk'] ?></td>
-                                        <td><span class="badge bg-<?= $is_late ? 'danger' : 'success' ?>"><?= $is_late ? 'Terlambat' : 'Hadir' ?></span></td>
+                                        <td><span
+                                                class="badge bg-<?= $is_late ? 'danger' : 'success' ?>"><?= $is_late ? 'Terlambat' : 'Hadir' ?></span>
+                                        </td>
                                     </tr>
                                 <?php endwhile;
-                                if (mysqli_num_rows($res_rt) == 0) echo "<tr><td colspan='3' class='text-center py-4 text-muted'>Belum ada pegawai yang absen hari ini.</td></tr>"; ?>
+                                if (mysqli_num_rows($res_rt) == 0)
+                                    echo "<tr><td colspan='3' class='text-center py-4 text-muted'>Belum ada pegawai yang absen hari ini.</td></tr>"; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-            <?php elseif ($page == 'pegawai') : ?>
+            <?php elseif ($page == 'pegawai'): ?>
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold mb-0">Manajemen Data & Akun Pegawai</h5>
@@ -453,53 +483,88 @@ $page = $_GET['page'] ?? 'dashboard';
                                            LEFT JOIN pegawai p ON a.id_akun = p.id_akun 
                                            WHERE a.role='pegawai' ORDER BY p.nama_pegawai ASC";
                                 $res_p = mysqli_query($conn, $sql_peg);
-                                while ($p = mysqli_fetch_assoc($res_p)) : $is_aktif = ($p['status_akun'] == 'aktif'); ?>
+                                while ($p = mysqli_fetch_assoc($res_p)):
+                                    $is_aktif = ($p['status_akun'] == 'aktif'); ?>
                                     <tr>
                                         <td><code class="text-dark fw-bold"><?= $p['nip'] ?? '-' ?></code></td>
                                         <td class="fw-bold text-uppercase"><?= $p['nama_pegawai'] ?? $p['username'] ?></td>
-                                        <td><span class="badge rounded-pill bg-<?= $is_aktif ? 'success' : 'secondary' ?>"><?= ucfirst($p['status_akun']) ?></span></td>
+                                        <td><span
+                                                class="badge rounded-pill bg-<?= $is_aktif ? 'success' : 'secondary' ?>"><?= ucfirst($p['status_akun']) ?></span>
+                                        </td>
                                         <td class="text-center">
                                             <div class="btn-group gap-1">
-                                                <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#detailPegawai<?= $p['id_akun'] ?>">
+                                                <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm"
+                                                    data-bs-toggle="modal" data-bs-target="#detailPegawai<?= $p['id_akun'] ?>">
                                                     <i class="bi bi-eye"></i> Detail
                                                 </button>
-                                                <a href="edit_pegawai_final.php?id=<?= $p['id_akun'] ?>" class="btn btn-primary btn-sm fw-bold shadow-sm">
+                                                <a href="edit_pegawai_final.php?id=<?= $p['id_akun'] ?>"
+                                                    class="btn btn-primary btn-sm fw-bold shadow-sm">
                                                     <i class="bi bi-pencil-square"></i> Edit
                                                 </a>
-                                                <button onclick="konfirmasiStatus('<?= $p['id_akun'] ?>', '<?= $p['status_akun'] ?>')" class="btn btn-<?= $is_aktif ? 'warning' : 'success' ?> btn-sm fw-bold shadow-sm">
+                                                <button
+                                                    onclick="konfirmasiStatus('<?= $p['id_akun'] ?>', '<?= $p['status_akun'] ?>')"
+                                                    class="btn btn-<?= $is_aktif ? 'warning' : 'success' ?> btn-sm fw-bold shadow-sm">
                                                     <i class="bi bi-power"></i>
                                                 </button>
-                                                <button onclick="konfirmasiHapus('<?= $p['id_akun'] ?>')" class="btn btn-danger btn-sm shadow-sm">
+                                                <button onclick="konfirmasiHapus('<?= $p['id_akun'] ?>')"
+                                                    class="btn btn-danger btn-sm shadow-sm">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
 
-                                            <div class="modal fade text-start" id="detailPegawai<?= $p['id_akun'] ?>" tabindex="-1" aria-hidden="true">
+                                            <div class="modal fade text-start" id="detailPegawai<?= $p['id_akun'] ?>"
+                                                tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content border-0 shadow">
                                                         <div class="modal-header bg-primary text-white">
-                                                            <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2"></i>Profil Lengkap Pegawai</h5>
-                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                            <h5 class="modal-title fw-bold"><i
+                                                                    class="bi bi-person-vcard me-2"></i>Profil Lengkap Pegawai
+                                                            </h5>
+                                                            <button type="button" class="btn-close btn-close-white"
+                                                                data-bs-dismiss="modal"></button>
                                                         </div>
                                                         <div class="modal-body p-4">
                                                             <div class="row g-3">
-                                                                <div class="col-6"><small class="text-muted d-block">NIP</small><strong><?= $p['nip'] ?? '-' ?></strong></div>
-                                                                <div class="col-6"><small class="text-muted d-block">Status Kepegawaian</small><span class="badge bg-light text-dark border"><?= $p['status_kepegawaian'] ?? '-' ?></span></div>
-                                                                <div class="col-12 border-bottom pb-2 mt-3"><small class="text-muted d-block">Nama Lengkap</small>
-                                                                    <h6 class="fw-bold text-uppercase mb-0"><?= $p['nama_pegawai'] ?? $p['username'] ?></h6>
+                                                                <div class="col-6"><small
+                                                                        class="text-muted d-block">NIP</small><strong><?= $p['nip'] ?? '-' ?></strong>
                                                                 </div>
-                                                                <div class="col-6"><small class="text-muted d-block">Pangkat/Gol. Ruang</small><span><?= $p['pangkat_gol_ruang'] ?? '-' ?></span></div>
-                                                                <div class="col-6"><small class="text-muted d-block">Jabatan</small><span><?= $p['jabatan'] ?? '-' ?></span></div>
-                                                                <div class="col-6"><small class="text-muted d-block">Jenis Kelamin</small><span class="text-capitalize"><?= $p['jenis_kelamin'] ?? '-' ?></span></div>
-                                                                <div class="col-6"><small class="text-muted d-block">Tanggal Lahir</small><span><?= $p['tanggal_lahir'] ? date('d/m/Y', strtotime($p['tanggal_lahir'])) : '-' ?></span></div>
-                                                                <div class="col-12 bg-light p-2 rounded mt-2"><small class="text-muted d-block">Alamat Lengkap</small>
+                                                                <div class="col-6"><small class="text-muted d-block">Status
+                                                                        Kepegawaian</small><span
+                                                                        class="badge bg-light text-dark border"><?= $p['status_kepegawaian'] ?? '-' ?></span>
+                                                                </div>
+                                                                <div class="col-12 border-bottom pb-2 mt-3"><small
+                                                                        class="text-muted d-block">Nama Lengkap</small>
+                                                                    <h6 class="fw-bold text-uppercase mb-0">
+                                                                        <?= $p['nama_pegawai'] ?? $p['username'] ?>
+                                                                    </h6>
+                                                                </div>
+                                                                <div class="col-6"><small
+                                                                        class="text-muted d-block">Pangkat/Gol.
+                                                                        Ruang</small><span><?= $p['pangkat_gol_ruang'] ?? '-' ?></span>
+                                                                </div>
+                                                                <div class="col-6"><small
+                                                                        class="text-muted d-block">Jabatan</small><span><?= $p['jabatan'] ?? '-' ?></span>
+                                                                </div>
+                                                                <div class="col-6"><small class="text-muted d-block">Jenis
+                                                                        Kelamin</small><span
+                                                                        class="text-capitalize"><?= $p['jenis_kelamin'] ?? '-' ?></span>
+                                                                </div>
+                                                                <div class="col-6"><small class="text-muted d-block">Tanggal
+                                                                        Lahir</small><span><?= $p['tanggal_lahir'] ? date('d/m/Y', strtotime($p['tanggal_lahir'])) : '-' ?></span>
+                                                                </div>
+                                                                <div class="col-12 bg-light p-2 rounded mt-2"><small
+                                                                        class="text-muted d-block">Alamat Lengkap</small>
                                                                     <p class="mb-0 small"><?= $p['alamat'] ?? '-' ?></p>
                                                                 </div>
-                                                                <div class="col-12 mt-3"><small class="text-muted d-block italic">Username Login:</small><span class="badge bg-dark"><?= $p['username'] ?></span></div>
+                                                                <div class="col-12 mt-3"><small
+                                                                        class="text-muted d-block italic">Username
+                                                                        Login:</small><span
+                                                                        class="badge bg-dark"><?= $p['username'] ?></span></div>
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer border-0">
-                                                            <button type="button" class="btn btn-secondary w-100 fw-bold" data-bs-dismiss="modal">Tutup</button>
+                                                            <button type="button" class="btn btn-secondary w-100 fw-bold"
+                                                                data-bs-dismiss="modal">Tutup</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -512,12 +577,13 @@ $page = $_GET['page'] ?? 'dashboard';
                     </div>
                 </div>
 
-            <?php elseif ($page == 'absensi') : ?>
+            <?php elseif ($page == 'absensi'): ?>
                 <?php include 'data_absensi.php'; ?>
 
-            <?php elseif ($page == 'terlewat') : ?>
+            <?php elseif ($page == 'terlewat'): ?>
                 <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <h5 class="fw-bold text-danger mb-4"><i class="bi bi-person-x-fill me-2"></i> Pegawai Belum Absen Hari Ini</h5>
+                    <h5 class="fw-bold text-danger mb-4"><i class="bi bi-person-x-fill me-2"></i> Pegawai Belum Absen Hari
+                        Ini</h5>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
                             <thead class="table-light">
@@ -533,8 +599,8 @@ $page = $_GET['page'] ?? 'dashboard';
                                 $tgl_skrg = date('Y-m-d');
                                 $res_miss = mysqli_query($conn, "SELECT * FROM akun WHERE role='pegawai' AND status_akun='aktif' AND id_akun NOT IN (SELECT id_pegawai FROM absensi WHERE tanggal_absensi='$tgl_skrg')");
                                 $no = 1;
-                                if (mysqli_num_rows($res_miss) > 0) :
-                                    while ($m = mysqli_fetch_assoc($res_miss)) : ?>
+                                if (mysqli_num_rows($res_miss) > 0):
+                                    while ($m = mysqli_fetch_assoc($res_miss)): ?>
                                         <tr>
                                             <td><?= $no++ ?></td>
                                             <td class="fw-bold text-uppercase"><?= $m['username'] ?></td>
@@ -542,9 +608,10 @@ $page = $_GET['page'] ?? 'dashboard';
                                             <td class="text-danger small fw-bold">Belum Melakukan Absensi</td>
                                         </tr>
                                     <?php endwhile;
-                                else : ?>
+                                else: ?>
                                     <tr>
-                                        <td colspan="4" class="text-center py-5 text-success fw-bold">Semua pegawai aktif sudah absen hari ini!</td>
+                                        <td colspan="4" class="text-center py-5 text-success fw-bold">Semua pegawai aktif sudah
+                                            absen hari ini!</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
@@ -552,7 +619,7 @@ $page = $_GET['page'] ?? 'dashboard';
                     </div>
                 </div>
 
-            <?php elseif ($page == 'laporan') : ?>
+            <?php elseif ($page == 'laporan'): ?>
                 <?php
                 $tgl_mulai = $_GET['tgl_mulai'] ?? date('Y-m-01');
                 $tgl_selesai = $_GET['tgl_selesai'] ?? date('Y-m-d');
@@ -563,15 +630,21 @@ $page = $_GET['page'] ?? 'dashboard';
                     <h5 class="fw-bold mb-4">Filter Periode Laporan</h5>
                     <form method="GET" class="row g-3">
                         <input type="hidden" name="page" value="laporan">
-                        <div class="col-md-4"><label class="form-label small fw-bold">Mulai Tanggal</label><input type="date" name="tgl_mulai" class="form-control" value="<?= $tgl_mulai ?>"></div>
-                        <div class="col-md-4"><label class="form-label small fw-bold">Sampai Tanggal</label><input type="date" name="tgl_selesai" class="form-control" value="<?= $tgl_selesai ?>"></div>
-                        <div class="col-md-4 d-flex align-items-end gap-2"><button type="submit" class="btn btn-primary w-100 fw-bold">FILTER</button><button onclick="window.print()" class="btn btn-success w-100 fw-bold">CETAK PDF</button></div>
+                        <div class="col-md-4"><label class="form-label small fw-bold">Mulai Tanggal</label><input
+                                type="date" name="tgl_mulai" class="form-control" value="<?= $tgl_mulai ?>"></div>
+                        <div class="col-md-4"><label class="form-label small fw-bold">Sampai Tanggal</label><input
+                                type="date" name="tgl_selesai" class="form-control" value="<?= $tgl_selesai ?>"></div>
+                        <div class="col-md-4 d-flex align-items-end gap-2"><button type="submit"
+                                class="btn btn-primary w-100 fw-bold">FILTER</button><button onclick="window.print()"
+                                class="btn btn-success w-100 fw-bold">CETAK PDF</button></div>
                     </form>
                 </div>
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <div class="text-center mb-4 d-none d-print-block">
                         <h3 class="fw-bold">LAPORAN ABSENSI PERPUSTAKAAN</h3>
-                        <p>Periode: <?= date('d/m/Y', strtotime($tgl_mulai)) ?> s/d <?= date('d/m/Y', strtotime($tgl_selesai)) ?></p>
+                        <p>Periode: <?= date('d/m/Y', strtotime($tgl_mulai)) ?> s/d
+                            <?= date('d/m/Y', strtotime($tgl_selesai)) ?>
+                        </p>
                         <hr style="border: 2px solid #000;">
                     </div>
                     <div class="table-responsive">
@@ -587,13 +660,16 @@ $page = $_GET['page'] ?? 'dashboard';
                             </thead>
                             <tbody>
                                 <?php $no = 1;
-                                while ($l = mysqli_fetch_assoc($res_lap)): $is_late = (strtotime($l['jam_masuk']) > strtotime('08:00:00')); ?>
+                                while ($l = mysqli_fetch_assoc($res_lap)):
+                                    $is_late = (strtotime($l['jam_masuk']) > strtotime('08:00:00')); ?>
                                     <tr>
                                         <td><?= $no++ ?></td>
                                         <td class="text-uppercase fw-bold"><?= $l['username'] ?></td>
                                         <td><?= date('d/m/Y', strtotime($l['tanggal_absensi'])) ?></td>
                                         <td><?= $l['jam_masuk'] ?></td>
-                                        <td><span class="badge bg-<?= $is_late ? 'danger' : 'success' ?>"><?= $is_late ? 'Terlambat' : 'Hadir' ?></span></td>
+                                        <td><span
+                                                class="badge bg-<?= $is_late ? 'danger' : 'success' ?>"><?= $is_late ? 'Terlambat' : 'Hadir' ?></span>
+                                        </td>
                                     </tr>
                                 <?php endwhile; ?>
                             </tbody>
@@ -605,7 +681,7 @@ $page = $_GET['page'] ?? 'dashboard';
     </div>
 
     <script>
-        document.getElementById('sidebarCollapse').addEventListener('click', function() {
+        document.getElementById('sidebarCollapse').addEventListener('click', function () {
             document.body.classList.toggle('sidebar-toggled');
         });
 

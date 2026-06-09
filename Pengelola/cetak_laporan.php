@@ -2,6 +2,8 @@
 include '../koneksi.php';
 
 $tgl_mulai = $_GET['mulai'] ?? date('Y-m-01');
+
+
 $tgl_selesai = $_GET['selesai'] ?? date('Y-m-d');
 
 $sql = "SELECT a.*, ak.username FROM absensi a 
